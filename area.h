@@ -1,10 +1,11 @@
 #pragma once
-	int occupied[605][605]; // -1 : black, 0 :line, 1:white 
+#include <vector>
+	int occupied[605][605]; // -1 : black, 0 :line, 1:white(occupied area) 
 	int time_constant = 0; // when use srand()
 	int player_life = 3; // life
 	int zombie_killed = 0; 
-	int last_key[2] = { 0,0 }; // 전의 two directions
 	int direction; // 현재 direction
+
 
 	float ratio() { // area/전체(%)
 		int r = 0;

@@ -30,32 +30,24 @@ int level = 0; // level variable
 Player p;
 vector<Zombie> zombies;
 vector<Zombie> newzombies;
-
+vector<int> keys;
+vector<vector<int>> positions;
 clock_t start = clock();
 clock_t finish;
 
 
 void floodfill(int x, int y) {
-	if (occupied[x][y] == -1) {
+	if (occupied[x][y] == -1 && x>10 && x<WIDTH-10 && y>10 && y<490) {
 		occupied[x][y] = 1;
 		floodfill(x + 5, y);
 		floodfill(x - 5, y);
 		floodfill(x, y + 5);
 		floodfill(x, y - 5);
-		cout << x << y << endl;
+
 	}
 	
 }
-void fill_area() {
-	/*if ((last_key == GLUT_KEY_UP && direction == GLUT_KEY_LEFT)|| last_key == GLUT_KEY_LEFT && direction == GLUT_KEY_UP)
-	floodfill(p.getX() + 5, p.getY() - 5
-	if ((last_key == GLUT_KEY_DOWN && direction == GLUT_KEY_LEFT) || last_key == GLUT_KEY_LEFT && direction == GLUT_KEY_DOWN)
-	floodfill(p.getX() + 5, p.getY() + 5);
-	if ((last_key == GLUT_KEY_UP && direction == GLUT_KEY_RIGHT) || last_key == GLUT_KEY_RIGHT && direction == GLUT_KEY_UP)
-	floodfill(p.getX() - 5, p.getY() - 5);
-	if ((last_key == GLUT_KEY_DOWN && direction == GLUT_KEY_RIGHT) || last_key == GLUT_KEY_RIGHT && direction == GLUT_KEY_DOWN)
-	floodfill(p.getX() + 5, p.getY() + 5);*/
-}
+
 void draw_string(void * font, const char* str, float x, float y) {
 	glRasterPos2f(x, y);
 	for (int i = 0; i < strlen(str); i++) glutBitmapCharacter(font, str[i]);
@@ -107,9 +99,12 @@ void processSpecialKeys(int key, int x, int y) {
 			else if (direction == GLUT_KEY_RIGHT && key == GLUT_KEY_LEFT){}
 			else if (direction == GLUT_KEY_LEFT && key == GLUT_KEY_RIGHT){}
 			else {
-				if (key != direction) {
-					last_key[1] = last_key[0];
-					last_key[0] = direction;
+				if (key != direction) { // 그 전의 two directions 저장, 바로 전 last_key[0], 두개 전 last_key[1]
+					keys.push_back(key);			
+					vector<int> pos;
+					pos.push_back(p.getX());
+					pos.push_back(p.getY());
+					positions.push_back(pos);
 				}
 					direction = key;
 				
@@ -220,6 +215,7 @@ void draw_outline() {
 		draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "HELL", 220, 550);
 		break;
 	}
+	//ratio
 	char* c = new char[6];
 	c[0] = (int)(ratio() / 10);
 	c[0] += 48;
@@ -228,12 +224,11 @@ void draw_outline() {
 	c[2] = '.';
 	c[3] = (int)(ratio() / 0.1) - 10 * (int)(ratio() / 1);
 	c[4] = (int)(ratio() / 0.01) - 10 * (int)(ratio() / 0.1);
-	c[1] += 48;
+	c[1] += 48;	//int to char.(ASCII code)
 	c[3] += 48;
 	c[4] += 48;
 	c[5] = '%';
 	if (c[0]==48) c[0] = ' ';
-
 	glRasterPos2f(420, 550);
 	for (int i = 0; i < 6; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c[i]);
 
@@ -242,44 +237,105 @@ void player_move() {
 	if (direction == GLUT_KEY_UP && (p.getY() + p.getSize() / 2) < 505){
 		
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX()][p.getY() + 5] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
-		}		
+			keys.clear();
+			positions.clear();
+			keys.push_back(direction);
+			vector<int> pos;
+			pos.push_back(p.getX());
+			pos.push_back(p.getY());
+			positions.push_back(pos);
+		}
 		if (occupied[p.getX()][p.getY() + 5] == 0) 	p.player_dead();
 		else p.setY(p.getY() + 5);
 	}
 	else if (direction == GLUT_KEY_DOWN && (p.getY() - p.getSize() / 2) > 0) {
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX()][p.getY() - 5] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
+			keys.clear();
+			positions.clear();
+			keys.push_back(direction);
+			vector<int> pos;
+			pos.push_back(p.getX());
+			pos.push_back(p.getY());
+			positions.push_back(pos);
 		}
 		if (occupied[p.getX()][p.getY() - 5] == 0) p.player_dead();
 		else p.setY(p.getY() - 5);
 	}
 	else if (direction == GLUT_KEY_LEFT && (p.getX() - p.getSize() / 2) > 0) {
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX()-5][p.getY()] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
+			keys.clear();
+			positions.clear();
+			keys.push_back(direction);
+			vector<int> pos;
+			pos.push_back(p.getX());
+			pos.push_back(p.getY());
+			positions.push_back(pos);		
 		}
 		if (occupied[p.getX() - 5][p.getY()] == 0) p.player_dead();
 		else p.setX(p.getX() - 5);
 	}
 	else if (direction == GLUT_KEY_RIGHT && (p.getX() + p.getSize() / 2) < WIDTH) {
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX()+5][p.getY()] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
+			keys.clear();
+			positions.clear();
+			keys.push_back(direction);
+			vector<int> pos;
+			pos.push_back(p.getX());
+			pos.push_back(p.getY());
+			positions.push_back(pos);
 		}
 		if (occupied[p.getX()+5][p.getY()] == 0) p.player_dead();
 		else p.setX(p.getX() + 5);
 	}
 }
+void fill_area() { //TODO!!
+	if (keys.size() == 1) {
+		if (direction == GLUT_KEY_RIGHT || direction == GLUT_KEY_LEFT);
+	}
+	else if ((keys[0] == GLUT_KEY_UP && keys[1] == GLUT_KEY_RIGHT) ||(keys[0] == GLUT_KEY_RIGHT && keys[1] == GLUT_KEY_UP) ) {
+		floodfill(positions[0][0] + 5, positions[0][1] + 5);
+	}
+	else if ((keys[0] == GLUT_KEY_DOWN && keys[1] == GLUT_KEY_RIGHT) || (keys[0] == GLUT_KEY_RIGHT && keys[1] == GLUT_KEY_DOWN)) {
+		floodfill(positions[0][0] + 5, positions[0][1] - 5);
+	}
+	else if ((keys[0] == GLUT_KEY_UP && keys[1] == GLUT_KEY_LEFT) || (keys[0] == GLUT_KEY_LEFT && keys[1] == GLUT_KEY_UP)) {
+		floodfill(positions[0][0] - 5 , positions[0][1] + 5);
+	}
+	else if ((keys[0] == GLUT_KEY_DOWN && keys[1] == GLUT_KEY_LEFT) || (keys[0] == GLUT_KEY_LEFT && keys[1] == GLUT_KEY_DOWN)) {
+		floodfill(positions[0][0] - 5, positions[0][1] - 5);
+	}
+
+	/*if ((start_key == GLUT_KEY_RIGHT && direction == GLUT_KEY_LEFT) || (start_key == GLUT_KEY_LEFT && direction == GLUT_KEY_RIGHT)) {
+		floodfill(p.getX()+5, ((start_pos[1] + p.getY()) / 5 * 5) / 2);
+	}*/
+	/*
+	else if ((last_key[1] == GLUT_KEY_RIGHT && last_key[0] == GLUT_KEY_UP && direction == GLUT_KEY_LEFT) || last_key[1] == GLUT_KEY_DOWN && last_key[0] == GLUT_KEY_LEFT && direction == GLUT_KEY_UP)
+		floodfill(p.getX() + 5, p.getY() - 5);
+	else if ((last_key[1] == GLUT_KEY_RIGHT && last_key[0] == GLUT_KEY_DOWN && direction == GLUT_KEY_LEFT) || last_key[1] == GLUT_KEY_UP && last_key[0] == GLUT_KEY_LEFT && direction == GLUT_KEY_DOWN)
+	floodfill(p.getX() + 5, p.getY() + 5);
+	else if ((last_key[1] == GLUT_KEY_LEFT && last_key[0] == GLUT_KEY_UP && direction == GLUT_KEY_RIGHT) || last_key[1] == GLUT_KEY_DOWN && last_key[0] == GLUT_KEY_RIGHT && direction == GLUT_KEY_UP)
+	floodfill(p.getX() - 5, p.getY() - 5);
+	else if ((last_key[1] == GLUT_KEY_LEFT && last_key[0] == GLUT_KEY_DOWN && direction == GLUT_KEY_RIGHT) || last_key[1] == GLUT_KEY_UP && last_key[0] == GLUT_KEY_RIGHT && direction == GLUT_KEY_DOWN)
+	floodfill(p.getX() -5, p.getY() + 5);*/
+}
+
 void idle() {
 	if (gamemode == 0) {}
 	else if (gamemode == 1) {
 		finish = clock();
 		if (finish - start > 100 / 5) {
 			start = finish;
+			bool current_sit = true;
+			if (occupied[p.getX()][p.getY()] == 0) current_sit = false;
 			player_move();
-			if (occupied[p.getX()][p.getY()] == 1)
+			if (p.getX()!= WIDTH / 2&& p.getY() != HEIGHT / 2 &&occupied[p.getX()][p.getY()] == 1 && !current_sit)
 			{	for (int i = 0; i < 601; i++) 
 					for (int j = 0; j < 601; j++)
 						if (occupied[i][j] == 0) occupied[i][j] = 1;
+			cout << keys[0] << " "  << positions[0][0] << " " << positions[0][1] << endl;
+			cout << p.getX() << " " << p.getY() << " " << endl;
+			cout << ((positions[0][0] + p.getX()) / 5 * 5) /2 << endl;
+			fill_area();
 			}
 
 			if (occupied[p.getX()][p.getY()] == -1)	occupied[p.getX()][p.getY()] = 0;
@@ -308,7 +364,7 @@ void renderScene() {
 	if (gamemode == 0) {
 		select_level();
 	}
-	else if (gamemode == 1 && player_life > 0 && ratio() < 99) {
+	else if (gamemode == 1 && player_life > 0 && ratio() < 70) {
 		draw_outline();
 		glColor3f(1, 1, 1);
 		draw_string(GLUT_BITMAP_TIMES_ROMAN_10, "Zombie(s) killed : ", 200, 490);
