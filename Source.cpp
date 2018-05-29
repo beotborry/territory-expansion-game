@@ -27,7 +27,6 @@ using namespace std;
 int gamemode = 0;
 int level = 0; // level variable
 
-
 Player p;
 vector<Zombie> zombies;
 vector<Zombie> newzombies;
@@ -323,9 +322,9 @@ void renderScene() {
 			if (zombie.exist())
 				zombie.draw_zombie();
 		}
-		glColor3f(1, 1, 1);
-		draw_string(GLUT_BITMAP_HELVETICA_12, "Zombie(s) killed : ", WIDTH / 3.0, HEIGHT - HEIGHT / 100.0);
-		glRasterPos2f(WIDTH / 3.0 + WIDTH / 5, HEIGHT - HEIGHT / 100.0);
+		glColor3f(1, 1, 0);
+		draw_string(GLUT_BITMAP_HELVETICA_12, "Zombie(s) Killed : ", WIDTH / 3.0, HEIGHT - HEIGHT / 100.0 - 1);
+		glRasterPos2f(WIDTH / 3.0 + WIDTH / 5, HEIGHT - HEIGHT / 100.0 - 1);
 		char c[4];
 		c[0] = zombie_killed / 1000 + 48;
 		c[1] = (zombie_killed % 1000) / 100 + 48;

@@ -40,19 +40,19 @@ public:
 	   if (life) {
 		   Zombie_Dir = rand() % 4;
 		   if (Zombie_Dir == 0) {
-			   if ((pos_y + 1) < HEIGHT && occupied[pos_x][pos_y + 2] != 1)	   this->pos_y ++;
+			   if ((pos_y + 1) < HEIGHT && occupied[pos_x][pos_y + 2] != 1)	   this->pos_y += 1;
 			   else  this->pos_y --;
 		   }
 		   else if (Zombie_Dir == 1) {
-			   if ((pos_y - 1) > 0 && occupied[pos_x][pos_y - 2] != 1)   this->pos_y -- ;
+			   if ((pos_y - 1) > 0 && occupied[pos_x][pos_y - 2] != 1)   this->pos_y -= 1;
 			   else this->pos_y ++;
 		   }
 		   else if (Zombie_Dir == 2) {
-			   if ((pos_x - 1) > 0 && occupied[pos_x -2][pos_y] != 1)   this->pos_x -- ;
+			   if ((pos_x - 1) > 0 && occupied[pos_x -2][pos_y] != 1)   this->pos_x -= 1;
 			   else this->pos_x ++;
 		   }
 		   else if (Zombie_Dir == 3) {
-			   if ((pos_x + 1) < WIDTH && occupied[pos_x + 2][pos_y] != 1)  this->pos_x ++ ;
+			   if ((pos_x + 1) < WIDTH && occupied[pos_x + 2][pos_y] != 1)  this->pos_x += 1;
 			   else this->pos_x --;
 		   }
 	   }
@@ -69,5 +69,6 @@ private:
    int pos_y;
    int Zombie_Dir;
    int Zombie_ID;
+   int speed = 1;
    bool life;
 };
