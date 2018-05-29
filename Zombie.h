@@ -28,20 +28,16 @@ public:
 	void zombie_die() {
 		zombie_killed++;
 		life = false;
-		
 	}
    void draw_zombie() {
-	
-		   glPointSize(object_size);
-		   glBegin(GL_POINTS);
-		   glColor3f(1, 0, 0);
-		   glVertex2f(pos_x, pos_y);
-		   glEnd();
-	   
+		glPointSize(object_size);
+		glBegin(GL_POINTS);
+		glColor3f(1, 0, 0);
+		glVertex2f(pos_x, pos_y);
+		glEnd();
    }
    void move() {
 	   if (life) {
-
 		   Zombie_Dir = rand() % 4;
 		   if (Zombie_Dir == 0) {
 			   if ((pos_y + 1) < HEIGHT && occupied[pos_x][pos_y + 2] != 1)	   this->pos_y ++;
