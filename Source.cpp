@@ -62,9 +62,8 @@ void draw_string(void * font, const char* str, float x, float y) {
 void draw_area() {
 	for (int i = 0; i <= WIDTH; i++)
 		for (int j = 0; j <= HEIGHT; j++) {
-			if (occupied[i][j] == 1) { //area fill
+			if (occupied[i][j] == 1) { //area fill;
 									   //cout << i << " " << j << endl;
-				glPointSize(10.0f);
 				glBegin(GL_QUADS);
 				glColor3f(0, 1, 0);
 				glVertex2f(i + 0.5, j + 0.5);
@@ -74,13 +73,17 @@ void draw_area() {
 				glEnd();
 			}
 			if (occupied[i][j] == 0) { //line fill
-				glPointSize(10.0f);
-				glBegin(GL_QUADS);
+				glBegin(GL_POLYGON);
+
 				glColor3f(1, 1, 0);
-				glVertex2f(i + 0.5, j + 0.5);
-				glVertex2f(i + 0.5, j - 0.5);
-				glVertex2f(i - 0.5, j - 0.5);
-				glVertex2f(i - 0.5, j + 0.5);
+				glVertex2f(i + 0.5,j);
+				glVertex2f(i + 0.354, j - 0.354);
+				glVertex2f(i, j - 0.5);
+				glVertex2f(i - 0.354, j - 0.354);
+				glVertex2f(i - 0.5,j);
+				glVertex2f(i - 0.354, j + 0.354);
+				glVertex2f(i, j + 0.5);
+				glVertex2f(i + 0.354, j + 0.354);
 
 				glEnd();
 			}
@@ -104,12 +107,7 @@ void processSpecialKeys(int key, int x, int y) {
 		else if (direction == GLUT_KEY_DOWN && key == GLUT_KEY_UP) {}
 		else if (direction == GLUT_KEY_RIGHT && key == GLUT_KEY_LEFT) {}
 		else if (direction == GLUT_KEY_LEFT && key == GLUT_KEY_RIGHT) {}
-		else {
-			if (key != direction) {
-				last_key[1] = last_key[0];
-				last_key[0] = direction;
-			}
-			direction = key;
+		else {	direction = key;
 
 		}
 		//cout << direction << last_key << endl;
@@ -139,6 +137,23 @@ void processNormalKeys(unsigned char key, int x, int y) {
 			}
 		}
 	}
+	if(gamemode == 2)
+		if ((int)key == 13) {
+			gamemode = 0;
+			player_life = 3; // life
+			zombie_killed = 0;
+			zombies.clear();
+			for (int i = 0; i < WIDTH + 1; i++)  // occupied 모두 -1로 초기화
+				for (int j = 0; j < HEIGHT + 1; j++)
+					occupied[i][j] = -1;// -1 : black, 0 :line, 1:white 
+			p.setX(WIDTH / 2); p.setY(HEIGHT / 2);
+			for (int i = WIDTH / 2 - WIDTH / 10; i <= WIDTH / 2 + WIDTH / 10; i++) //declare intial area
+				for (int j = HEIGHT / 2 - HEIGHT / 10; j < HEIGHT / 2 + HEIGHT / 10; j++)
+					occupied[i][j] = 1;
+			direction = 0;
+
+		}
+		
 }
 void select_level() {
 	glColor3f(1, 1, 1);
@@ -189,12 +204,12 @@ void draw_outline() {
 	glLineWidth(5.0f);
 	glBegin(GL_LINES);
 	glColor3f(1, 1, 1);
-	glVertex2f(0, HEIGHT + 1.5);
-	glVertex2f(WIDTH, HEIGHT + 1.5); // underline
+	glVertex2f(0, HEIGHT +2);
+	glVertex2f(WIDTH, HEIGHT +2); // underline
 	glVertex2f(WIDTH * 195.0 / 600.0, HEIGHT + HEIGHT/5);
-	glVertex2f(WIDTH * 195.0 / 600.0, HEIGHT + 2); // 1st vertical line
+	glVertex2f(WIDTH * 195.0 / 600.0, HEIGHT + 2.5 + 1); // 1st vertical line
 	glVertex2f(WIDTH * 395.0 / 600.0, HEIGHT + HEIGHT/5);
-	glVertex2f(WIDTH * 395.0 / 600.0, HEIGHT + 2); // 2nd vertical line
+	glVertex2f(WIDTH * 395.0 / 600.0, HEIGHT + 2.5 + 1); // 2nd vertical line
 	glEnd();
 
 	glColor3f(0, 1, 1);
@@ -240,28 +255,24 @@ void player_move() {
 	if (direction == GLUT_KEY_UP && (p.getY() + 1) < HEIGHT + 1) {
 
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX()][p.getY() + 1] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
 		}
 		if (occupied[p.getX()][p.getY() + 1] == 0)    p.player_dead();
 		else p.setY(p.getY() + 1);
 	}
 	else if (direction == GLUT_KEY_DOWN && (p.getY() - 1) > 0) {
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX()][p.getY() - 1] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
 		}
 		if (occupied[p.getX()][p.getY() - 1] == 0) p.player_dead();
 		else p.setY(p.getY() - 1);
 	}
 	else if (direction == GLUT_KEY_LEFT && (p.getX() - 1) > 0) {
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX() - 1][p.getY()] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
 		}
 		if (occupied[p.getX() - 1][p.getY()] == 0) p.player_dead();
 		else p.setX(p.getX() - 1);
 	}
 	else if (direction == GLUT_KEY_RIGHT && (p.getX() + 1) < WIDTH) {
 		if (occupied[p.getX()][p.getY()] == 1 && occupied[p.getX() + 1][p.getY()] == -1) {
-			last_key[0] = 0; last_key[1] = 0;
 		}
 		if (occupied[p.getX() + 1][p.getY()] == 0) p.player_dead();
 		else p.setX(p.getX() + 1);
@@ -297,10 +308,9 @@ void idle() {
 				if (occupied[z.getX()][z.getY()] == 0 && z.exist()) p.player_dead();
 
 				if (occupied[z.getX()][z.getY()] == 1 && z.exist() == true) {
-					cout << z.exist() << endl;
-					z.zombie_die(); cout << z.exist() << endl;
+					z.zombie_die();
 				}
-				else z.move();
+				else if (z.exist())z.move();
 
 				newzombies.push_back(z);
 			}
@@ -336,12 +346,17 @@ void renderScene() {
 		draw_area();
 		p.drawPlayer();
 		for (auto zombie : zombies)
-			zombie.draw_zombie();
+			if(zombie.exist())zombie.draw_zombie();
 	}
 	else if (gamemode == 1 && (player_life == 0 || ratio() >= 70)) {
+		gamemode++;
+	}
+	else if (gamemode == 2){
 		draw_outline();
-		if (player_life == 0) draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER", WIDTH / 2.0, HEIGHT / 5.0 * 3.0);
-		else draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "WIN", WIDTH/ 2.0, HEIGHT / 5.0 * 3.0);
+		if (player_life == 0) draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER", WIDTH / 2.5, HEIGHT / 5.0 * 3.0);
+		else draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "WIN", WIDTH/ 2.5, HEIGHT / 5.0 * 3.0);
+		draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "RESTART : PRESS ENTER KEY", WIDTH / 5, HEIGHT / 6.0 * 3.0);
+
 	}
 	glutPostRedisplay();
 	glutSwapBuffers();
