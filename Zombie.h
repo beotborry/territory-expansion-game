@@ -12,7 +12,7 @@ public:
 		srand(time(NULL) + t++);
 		int x = (rand() % WIDTH);
 		int y = (rand() % HEIGHT);
-		while (occupied[x][y] == 1 && (x == 0 || y == 0)) {
+		while (occupied[x][y] == 1) {
 			int x = (rand() % WIDTH);
 			int y = (rand() % HEIGHT);
 		}
@@ -31,20 +31,13 @@ public:
 		
 	}
    void draw_zombie() {
-	   if (life) {
+	
 		   glPointSize(object_size);
 		   glBegin(GL_POINTS);
 		   glColor3f(1, 0, 0);
 		   glVertex2f(pos_x, pos_y);
 		   glEnd();
-	   }
-	   else {
-		   glPointSize(object_size);
-		   glBegin(GL_POINTS);
-		   glColor3f(0, 1, 0);
-		   glVertex2f(pos_x, pos_y);
-		   glEnd();
-	   }
+	   
    }
    void move() {
 	   if (life) {

@@ -25,7 +25,7 @@ public:
 		pos_x = WIDTH / 2;
 		pos_y = HEIGHT / 2;
 		for (int i = WIDTH/2 - WIDTH/10; i <= WIDTH / 2 + WIDTH / 10; i++) //declare intial area
-			for (int j = HEIGHT / 2- HEIGHT / 10; j < HEIGHT / 2 + HEIGHT / 10; j ++)
+			for (int j = HEIGHT / 2 -   HEIGHT / 10; j < HEIGHT / 2 + HEIGHT / 10; j ++)
 				occupied[i][j] = 1;
 	}	
 	void drawPlayer() { // player의 현재 위치 draw
