@@ -215,25 +215,25 @@ void draw_outline() {
 	
 	switch (level) {
 	case EASY:
-		draw_string(GLUT_BITMAP_HELVETICA_18, "EASY", WIDTH * 250 / 600.0, HEIGHT + HEIGHT / 10.0);
+		draw_string(GLUT_BITMAP_HELVETICA_18, "EASY", WIDTH * 250 / 600.0 + 5, HEIGHT + HEIGHT / 10.0);
 		break;
 	case NORMAL:
-		draw_string(GLUT_BITMAP_HELVETICA_18, "NORMAL", WIDTH * 250 / 600.0, HEIGHT + HEIGHT / 10.0);
+		draw_string(GLUT_BITMAP_HELVETICA_18, "NORMAL", WIDTH * 250 / 600.0 + 5, HEIGHT + HEIGHT / 10.0);
 		break;
 	case HARD:
-		draw_string(GLUT_BITMAP_HELVETICA_18, "HARD", WIDTH * 250 / 600.0, HEIGHT + HEIGHT / 10.0);
+		draw_string(GLUT_BITMAP_HELVETICA_18, "HARD", WIDTH * 250 / 600.0 + 5, HEIGHT + HEIGHT / 10.0);
 		break;
 	case HELL:
-		draw_string(GLUT_BITMAP_HELVETICA_18, "HELL", WIDTH * 250 / 600.0, HEIGHT + HEIGHT / 10.0);
+		draw_string(GLUT_BITMAP_HELVETICA_18, "HELL", WIDTH * 250 / 600.0 + 5, HEIGHT + HEIGHT / 10.0);
 		break;
 	}
 
 	//print occupied area ratio
+	//need to address memory leakage
 	char* c = new char[7];
 	if (ratio() > 99.99) c[0] = '1'; else c[0] = ' ';
 	c[1] = (int)(ratio() / 10) - 10* (int)(ratio()/100);
 	c[1] += 48;
-	
 	c[2] = (int)(ratio() / 1) - 10 * (int)(ratio() / 10);
 	c[3] = '.';
 	c[4] = (int)(ratio() / 0.1) - 10 * (int)(ratio() / 1);
@@ -310,8 +310,8 @@ void idle() {
 }
 
 void renderScene() {
-	//Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	if (gamemode == 0)
 		select_level();
 	else if (gamemode == 1 && player_life > 0 && ratio() < 70) {
@@ -337,9 +337,9 @@ void renderScene() {
 		gamemode++;
 	else if (gamemode == 2){
 		draw_outline();
-		if (player_life == 0) draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER", WIDTH / 2.5, HEIGHT / 5.0 * 3.0);
-		else draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "WIN", WIDTH/ 2.5, HEIGHT / 5.0 * 3.0);
-		draw_string(GLUT_BITMAP_TIMES_ROMAN_24, "RESTART : PRESS ENTER KEY", WIDTH / 5, HEIGHT / 6.0 * 3.0);
+		draw_string(GLUT_BITMAP_HELVETICA_18, "RESTART : PRESS ENTER KEY", WIDTH / 5 + 10, HEIGHT / 6.0 * 3.0);
+		if (player_life == 0) draw_string(GLUT_BITMAP_HELVETICA_18, "GAME OVER", WIDTH / 2.5 + 10, HEIGHT / 5.0 * 3.0);
+		else draw_string(GLUT_BITMAP_HELVETICA_18, "WIN", WIDTH / 2.5 + 10, HEIGHT / 5.0 * 3.0);
 	}
 	glutPostRedisplay();
 	glutSwapBuffers();

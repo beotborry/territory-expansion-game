@@ -10,14 +10,6 @@ class Player {
 public:
 
 	Player() {
-/*		for (int j = 0; j < HEIGHT+1; j++) {
-			occupied[0][j] = 1;
-			occupied[WIDTH][j] = 1;
-		}
-		for (int i = 0; i < WIDTH; i++) {
-			occupied[i][0] = 1;
-			occupied[i][500] = 1;
-		}*/
 		for (int i = 0; i < WIDTH + 1; i++) { // initialize occupied as -1
 			for (int j = 0; j < HEIGHT + 1; j++)
 				occupied[i][j] = -1;// -1 : black, 0 : line, 1 : white 
